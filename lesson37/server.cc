@@ -18,12 +18,15 @@ int main()
     }
 
     // 2、打开管道文件
+    // 命名管道，在open的时候，就已经进行了让读写同步
+    std::cout<<"open begin"<<std::endl;
     int rfd = open(fifoname.c_str(),O_RDONLY);
     if(rfd<0)
     {
         perror("open");
         return 2;
     }
+    std::cout<<"open end"<<std::endl;
 
     //3、进行通信
     char inbuffer[1024];
@@ -38,6 +41,7 @@ int main()
         else if(n==0)
         {
             // 写端关闭
+            std::cout<<"client quit, me too."<<std::endl;
             break;
         }
         else
