@@ -2,6 +2,7 @@
 
 int main()
 {
-
+	Bash();
+	
 	return 0;
 }
