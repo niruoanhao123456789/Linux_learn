@@ -62,7 +62,7 @@ void RandomTask(std::vector<int> *out)
 #define MYSQL_TASK 2
 #define REDIS_TASK 3
 
-std::string TaskTOString(int code)
+std::string TaskToString(int code)
 {
     switch (code)
     {
@@ -296,11 +296,11 @@ int main(int argc, char *argv[])
     // 2. 启动进程池
     pp->Start();
     sleep(2);
-    // for (auto task : task_codes)
-    // {
-    //     pp->PushTask(task);
-    //     usleep(500000);
-    // }
+    for (auto task : task_codes)
+    {
+        pp->PushTask(task);
+        usleep(500000);
+    }
 
     // while(true)
     // {
