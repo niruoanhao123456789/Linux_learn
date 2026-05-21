@@ -21,7 +21,7 @@ int main()
     {
         std::cout<<"Please Enter@ ";
         std::cin>>outstring;
-        write(wfd,outstring.c_str(),outstring.size());
+        write(wfd,outstring.c_str(),outstring.size()); // 要不要写\0?不需要！
     }
 
     close(wfd);
