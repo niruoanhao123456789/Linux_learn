@@ -1,0 +1,10 @@
+[2026-06-08 12:33:01][DEBUG][585297][main.cc][17]- FILE hello world hello bit, 3.14 C
+[2026-06-08 12:33:01][INFO][585297][main.cc][18]-  FILE hello world hello bit, 3.14 C
+[2026-06-08 12:33:01][WARNING][585297][main.cc][19]-  FILE hello world hello bit, 3.14 C
+[2026-06-08 12:33:01][ERROR][585297][main.cc][20]- FILE hello world hello bit, 3.14 C
+[2026-06-08 12:33:01][FATAL][585297][main.cc][21]- FILE hello world hello bit, 3.14 C
+[2026-06-08 12:35:50][DEBUG][586006][main.cc][17]- FILE hello world hello bit, 3.14 C
+[2026-06-08 12:35:50][INFO][586006][main.cc][18]-  FILE hello world hello bit, 3.14 C
+[2026-06-08 12:35:50][WARNING][586006][main.cc][19]-  FILE hello world hello bit, 3.14 C
+[2026-06-08 12:35:50][ERROR][586006][main.cc][20]- FILE hello world hello bit, 3.14 C
+[2026-06-08 12:35:50][FATAL][586006][main.cc][21]- FILE hello world hello bit, 3.14 C
