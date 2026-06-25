@@ -1,0 +1,20 @@
+apple: 苹果 - I eat an apple every day. / 我每天吃一个苹果。
+banana: 香蕉 - The monkey is eating a banana. / 猴子正在吃香蕉。
+cat: 猫 - My cat likes to sleep on the sofa. / 我的猫喜欢在沙发上睡觉。
+dog: 狗 - She takes her dog for a walk every morning. / 她每天早上带她的狗去散步。
+book: 书 - This book is very interesting. / 这本书非常有趣。
+pen: 笔 - May I use your pen? / 我可以用一下你的笔吗？
+happy: 快乐的 - She looks very happy today. / 她今天看起来很快乐。
+sad: 悲伤的 - He felt sad when he lost his watch. / 他丢了手表时感到很悲伤。
+run: 跑 - I run fast in the park. / 我在公园里跑得很快。
+jump: 跳 - The child can jump high. / 这个孩子能跳得很高。
+teacher: 老师 - Our teacher is very kind. / 我们的老师非常和蔼。
+student: 学生 - He is a hardworking student. / 他是一个勤奋的学生。
+car: 汽车 - His car is very fast. / 他的汽车非常快。
+bus: 公交车 - I go to school by bus. / 我乘公交车上学。
+love: 爱 - I love my family. / 我爱我的家人。
+hate: 恨 - I hate getting up early. / 我讨厌早起。
+hello: 你好 - Hello, nice to meet you! / 你好，很高兴认识你！
+goodbye: 再见 - Goodbye, see you tomorrow! / 再见，明天见！
+summer: 夏天 - Summer is my favorite season. / 夏天是我最喜欢的季节。
+winter: 冬天 - It is very cold in winter. / 冬天非常冷。
