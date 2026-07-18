@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 个人博客</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{
+            font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+            background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+            min-height:100vh;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:20px;
+        }
+        .login-box{
+            background:#fff;
+            border-radius:24px;
+            box-shadow:0 20px 60px rgba(0,0,0,0.2);
+            padding:40px 36px;
+            width:100%;
+            max-width:420px;
+        }
+        h2{font-size:28px;color:#1a1a2e;margin-bottom:8px;text-align:center;}
+        .sub{text-align:center;color:#666;font-size:14px;margin-bottom:32px;}
+        .input-group{margin-bottom:20px;}
+        label{display:block;font-size:14px;color:#333;margin-bottom:6px;font-weight:500;}
+        input{
+            width:100%;
+            padding:12px 16px;
+            border:1px solid #ddd;
+            border-radius:12px;
+            font-size:15px;
+            outline:none;
+            transition:0.2s;
+        }
+        input:focus{border-color:#667eea;box-shadow:0 0 0 3px rgba(102,126,234,0.1);}
+        button{
+            width:100%;
+            padding:12px;
+            background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+            color:#fff;
+            border:none;
+            border-radius:12px;
+            font-size:16px;
+            font-weight:600;
+            cursor:pointer;
+            margin-top:8px;
+            transition:transform 0.1s;
+        }
+        button:hover{opacity:0.95;transform:translateY(-1px);}
+        .footer{text-align:center;margin-top:24px;font-size:14px;color:#666;}
+        .footer a{color:#667eea;text-decoration:none;}
+        .footer a:hover{text-decoration:underline;}
+        .error{color:#e74c3c;font-size:12px;margin-top:5px;display:none;}
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2>欢迎回来</h2>
+        <div class="sub">登录以继续阅读精彩内容</div>
+        <form id="loginForm">
+            <div class="input-group">
+                <label>邮箱 / 用户名</label>
+                <input type="text" id="username" placeholder="请输入邮箱或用户名" autocomplete="off">
+                <div class="error" id="nameError">请输入用户名</div>
+            </div>
+            <div class="input-group">
+                <label>密码</label>
+                <input type="password" id="password" placeholder="请输入密码">
+                <div class="error" id="pwdError">请输入密码</div>
+            </div>
+            <button type="submit">登 录</button>
+        </form>
+        <div class="footer">
+            还没有账号？ <a href="Register.html">立即注册</a>
+            <a href="/">回到首页</a>    
+        </div>
+    </div>
+    <script>
+        const form = document.getElementById('loginForm');
+        const username = document.getElementById('username');
+        const password = document.getElementById('password');
+        const nameError = document.getElementById('nameError');
+        const pwdError = document.getElementById('pwdError');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            let isValid = true;
+
+            if(!username.value.trim()) {
+                nameError.style.display = 'block';
+                isValid = false;
+            } else {
+                nameError.style.display = 'none';
+            }
+
+            if(!password.value) {
+                pwdError.style.display = 'block';
+                isValid = false;
+            } else {
+                pwdError.style.display = 'none';
+            }
+
+            if(isValid) {
+                alert('登录成功（演示模式）\n实际需对接后端接口');
+                // window.location.href = '/dashboard';
+            }
+        });
+    </script>
+</body>
+</html>
