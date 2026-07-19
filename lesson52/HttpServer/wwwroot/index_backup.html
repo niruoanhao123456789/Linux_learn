@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>极简博客 · 林间随笔</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #fefefe;
+            color: #1a1a1a;
+            line-height: 1.6;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 3rem;
+            border-bottom: 1px solid #eaeaea;
+            padding-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 500;
+            letter-spacing: -0.3px;
+        }
+
+        .site-desc {
+            color: #5c5c5c;
+            margin-top: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        .blog-grid {
+            display: grid;
+            grid-template-columns: 1fr 240px;
+            gap: 2.5rem;
+        }
+
+        .post {
+            margin-bottom: 2rem;
+        }
+
+        .post-title {
+            font-size: 1.45rem;
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+        }
+
+        .post-title a {
+            text-decoration: none;
+            color: #111;
+            border-bottom: 1px solid transparent;
+        }
+
+        .post-title a:hover {
+            border-bottom-color: #aaa;
+        }
+
+        .meta {
+            font-size: 0.8rem;
+            color: #6c6c6c;
+            margin: 0.5rem 0;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .excerpt {
+            color: #2c2c2c;
+            margin: 0.6rem 0;
+            font-size: 0.92rem;
+        }
+
+        .tag {
+            font-size: 0.7rem;
+            background: #f0f0f0;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+
+        hr {
+            margin: 1.5rem 0;
+            border: 0;
+            border-top: 1px solid #ececec;
+        }
+
+        .sidebar p,
+        .sidebar h3 {
+            margin-bottom: 0.8rem;
+        }
+
+        .sidebar h3 {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .bio {
+            font-size: 0.85rem;
+            color: #444;
+            margin: 1rem 0;
+        }
+
+        .recent-link {
+            display: block;
+            font-size: 0.85rem;
+            margin-bottom: 0.6rem;
+            text-decoration: none;
+            color: #2c2c2c;
+        }
+
+        .recent-link:hover {
+            text-decoration: underline;
+        }
+
+        .footer {
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #888;
+            border-top: 1px solid #ececec;
+            padding-top: 2rem;
+        }
+
+        @media (max-width: 720px) {
+            .blog-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        button {
+            background: none;
+            border: 1px solid #ccc;
+            padding: 0.2rem 0.7rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            margin-left: 1rem;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #eaeaea;
+        }
+
+        body.dark {
+            background: #121212;
+            color: #eaeaea;
+        }
+
+        body.dark .post-title a {
+            color: #eaeaea;
+        }
+
+        body.dark .meta,
+        body.dark .excerpt,
+        body.dark .bio,
+        body.dark .site-desc {
+            color: #aaa;
+        }
+
+        body.dark .tag {
+            background: #2a2a2a;
+            color: #ddd;
+        }
+
+        body.dark hr,
+        body.dark header {
+            border-color: #2c2c2c;
+        }
+
+        body.dark button {
+            border-color: #444;
+            color: #ddd;
+            background: #1e1e1e;
+        }
+
+        body.dark button:hover {
+            background: #2c2c2c;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header style="display: flex; justify-content: space-between; align-items: baseline;">
+            <div>
+                <h1>林间随笔</h1>
+                <div class="site-desc">写点代码，读点书，安静思考</div>
+            </div>
+            <button id="themeBtn" aria-label="深色模式">🌙 深色</button>
+        </header>
+
+        <div class="blog-grid">
+            <!-- 主内容区：文章列表 -->
+            <main>
+                <div class="post">
+                    <div class="post-title"><a href="#">在噪音世界里，保持写博客的习惯</a></div>
+                    <div class="meta"><span>📅 2025-05-12</span><span>📖 4 分钟</span></div>
+                    <div class="excerpt">博客像一片自留地，不必迎合算法，只为记录思考的轨迹。分享关于长期写作的意义与技术学习的沉淀...</div>
+                    <div><span class="tag">#随笔</span><span class="tag">#思考</span></div>
+                </div>
+                <hr>
+                <div class="post">
+                    <div class="post-title"><a href="#">Go 语言里的并发模式：简易 worker pool 实现</a></div>
+                    <div class="meta"><span>📅 2025-05-05</span><span>📖 7 分钟</span></div>
+                    <div class="excerpt">通过有缓冲 channel 与 goroutine 组合，快速构建一个可控并发的任务队列，提升后端处理效率...</div>
+                    <div><span class="tag">#Golang</span><span class="tag">#并发</span></div>
+                </div>
+                <hr>
+                <div class="post">
+                    <div class="post-title"><a href="#">极简主义 CSS 架构：无需框架的现代化布局</a></div>
+                    <div class="meta"><span>📅 2025-04-28</span><span>📖 5 分钟</span></div>
+                    <div class="excerpt">Grid、Flex 与容器查询已经足够强大。抛弃臃肿库，用原生 CSS 构建整洁、响应式的个人站点。</div>
+                    <div><span class="tag">#CSS</span><span class="tag">#极简</span></div>
+                </div>
+                <hr>
+                <div class="post">
+                    <div class="post-title"><a href="#">读《代码大全》摘录：降低复杂度才是核心</a></div>
+                    <div class="meta"><span>📅 2025-04-20</span><span>📖 6 分钟</span></div>
+                    <div class="excerpt">软件设计的本质是管理复杂性。好的命名、最小化耦合以及防御式编程的思考，比炫技更重要。</div>
+                    <div><span class="tag">#读书笔记</span><span class="tag">#软件工程</span></div>
+                </div>
+                <hr>
+                <div class="post">
+                    <div class="post-title"><a href="#">自部署轻量级监控 uptime-kuma 体验</a></div>
+                    <div class="meta"><span>📅 2025-04-12</span><span>📖 3 分钟</span></div>
+                    <div class="excerpt">搭建一个简单好看的服务状态看板，实时推送异常通知，个人开发者必备的小工具。</div>
+                    <div><span class="tag">#自托管</span><span class="tag">#运维</span></div>
+                </div>
+            </main>
+
+            <!-- 侧边栏: 简介 + 近期 -->
+            <aside class="sidebar">
+                <div>
+                    <h3>🌿 关于我</h3>
+                    <div class="bio">全栈开发者，热爱开源与写作。相信简洁胜过复杂，持续输出有价值的内容。</div>
+                    <div class="bio">📮 mo.lin@blog.me · GitHub</div>
+                </div>
+                <div style="margin: 2rem 0;">
+                    <h3>📌 近期文章</h3>
+                    <a href="#" class="recent-link">· 在噪音世界里，保持写博客的习惯</a>
+                    <a href="#" class="recent-link">· Go 语言简易 worker pool 实现</a>
+                    <a href="#" class="recent-link">· 极简主义 CSS 架构</a>
+                    <a href="#" class="recent-link">· 读《代码大全》摘录</a>
+                </div>
+                <div>
+                    <h3>🏷️ 常用标签</h3>
+                    <span class="tag">#Golang</span> <span class="tag">#前端</span> <span class="tag">#架构</span> <span
+                        class="tag">#读书</span> <span class="tag">#工具</span>
+                </div>
+            </aside>
+        </div>
+
+        <div>
+            <img src="image/th.jpg" alt="" width="300" height="200"> <!--http://115.190.145.241:8080/image/th.jpg-->
+            <img src="image/xlh.jpg" alt="" width="300" height="200">
+            <!-- <img src="https://b0.bdstatic.com/4dd6b45f1aaf522780397696dff922ca.jpg" alt="" width="300" height="200">
+        <img src="https://img0.baidu.com/it/u=1325184473,592027021&fm=253&app=138&f=JPEG?w=800&h=1067" alt="" width="300" height="200">
+        <img src="https://pic.rmb.bdstatic.com/bjh/df927da1460257c615fe66524010ea31.jpeg" alt="" width="300" height="200"> -->
+
+        </div>
+
+        <div>
+            <a href="https://www.baidu.com">合作方</a>
+            <a href="Login.html">登录</a>
+            <a href="Register.html">注册</a>
+            <a href="content.html">查看文章</a>
+            <!-- <video src="video/video.mp4" controls></video> -->
+
+        </div>
+
+        <div class="footer">
+            <p>© 2025 林间随笔 · 由热爱驱动 | 极简博客模板</p>
+        </div>
+
+
+    </div>
+
+    <script>
+        (function () {
+            const btn = document.getElementById('themeBtn');
+            const isDark = localStorage.getItem('theme') === 'dark' ||
+                (window.matchMedia('(prefers-color-scheme: dark)').matches && !localStorage.getItem('theme'));
+            if (isDark) {
+                document.body.classList.add('dark');
+                btn.innerHTML = '☀️ 浅色';
+            }
+            btn.addEventListener('click', () => {
+                const dark = document.body.classList.toggle('dark');
+                localStorage.setItem('theme', dark ? 'dark' : 'light');
+                btn.innerHTML = dark ? '☀️ 浅色' : '🌙 深色';
+            });
+            // 演示友好: 链接点击提醒（不干扰实际跳转体验，只是演示纯前端）
+            const allLinks = document.querySelectorAll('a[href="#"]');
+            allLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    alert('✨ 预览模式：完整文章页敬请期待。');
+                });
+            });
+        })();
+    </script>
+</body>
+
+</html>

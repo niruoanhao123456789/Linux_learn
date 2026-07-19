@@ -1,10 +1,11 @@
-#pragma once
+#ifndef __HTTP_PROTOCOL_HPP
+#define __HTTP_PROTOCOL_HPP
 
-#include<iostream>
-#include<string>
-#include<unordered_map>
-#include<sstream>
-#include"Logger.hpp"
+#include <iostream>
+#include <string>
+#include <unordered_map>
+#include <sstream>
+#include "Logger.hpp"
 
 using namespace LogModule;
 
@@ -17,104 +18,31 @@ const std::string gspace = " ";
 const std::string suffixsep = ".";
 const std::string argsep = "?";
 
+// "40"\r\n{"float":3.14, "int": 100, "s1": "helloworld", "s2": "hello bit"}
+// "40"\r\n{"float":3.14, "int": 100, "s1": "helloworld", "s2": "hello bit"}
+// "40"\r\n{"float":3.14, "int": 100, "s1": "helloworld", "s2": "hello bit"}
+// {"float":3.14, "int": 100, "s1": "helloworld", "s2": "hello bit"}
+
 class HttpRequest
 {
-public:
-    HttpRequest() {}
-
-    void Deserialize(std::string& streamstr)
-    {
-        // 1. 读取第一行
-        std::string status_line;
-        ReadOneLine(streamstr,&status_line);
-
-        // 2. 解析请求行
-        ParseReqLine(status_line);
-
-        // 3. 提取请求报头
-        int n = 0;
-        do
-        {
-            std::string line;
-            n = ReadOneLine(streamstr,&line);
-            if(n>0)
-            {
-                std::string key,value;
-                SplitString(line,&key,&value,headersep);
-                if(!key.empty() && !value.empty())
-                {
-                    _headerkv[key] = value;
-                }
-            }
-            else if(n == 0)
-            {
-                _blankline = "\r\n";
-                break;
-            }
-            else
-            {
-                LOG(LogLevel::DEBUG) << "bug ?";
-                break;
-            }
-
-        } while (n>0);
-
-        if(_headerkv.find("Content-Length") != _headerkv.end())
-        {
-            int len = std::stoi(_headerkv["Content-Length"]);
-            _body = streamstr.substr(0, len);
-            if(_method == "POST" || _method == "post")
-            {
-                _args = _body;
-            }
-        }
-        
-    }
-
-    std::string operator[](const std::string& key) const
-    {
-        if(key == "method")
-            return _method;
-        else if(key == "uri")
-            return _uri;
-        else if(key == "httpversion")
-            return _http_version;
-        else if(key == "body")
-            return _body;
-        else if(key == "path")
-            return _path;
-        else if(key == "suffix")
-            return _suffix;
-        else if(key == "args")
-            return _args;
-        else
-        {
-            auto iter = _headerkv.find(key);
-            if(iter != _headerkv.end())
-                return iter->second;
-        }
-        return std::string();
-    }
-
-    ~HttpRequest() {}
 private:
-    int ReadOneLine(std::string& streamstr,std::string* line)
+    int ReadOneLine(std::string &streamstr, std::string *line) // \r\n
     {
         auto pos = streamstr.find(linesep);
-        if(pos == std::string::npos)
+        if (pos == std::string::npos)
             return -1;
-        *line = streamstr.substr(0,pos);
-        streamstr.erase(0,pos + linesep.size());
-        return line->size();
+        *line = streamstr.substr(0, pos);
+        streamstr.erase(0, pos + linesep.size());
+        return line->size(); // > =
     }
 
-    void ParseReqLine(std::string& status_line)
+    void ParseReqLine(std::string &status_line)
     {
         std::stringstream ss(status_line);
         ss >> _method >> _uri >> _http_version;
 
         // /a/b/c.html or /
-        if(_uri == "/")
+        if (_uri == "/")
         {
             _path = webroot + _uri + homepage; // wwwroot + / + index.html
         }
@@ -122,18 +50,16 @@ private:
         {
             _path = webroot + _uri; // wwwroot/a/b/c.html
         }
-
         // /content.html?username=zhangsan&passwd=123456
         if(_method == "GET" || _method == "get")
         {
             auto pos = _path.find(argsep);
             if(pos != std::string::npos)
             {
-                _args = _path.substr(pos + argsep.size());
-                _path = _path.substr(0,pos);
+                _args = _path.substr(pos+argsep.size());
+                _path = _path.substr(0, pos);
             }
         }
-
         // 分析请求的资源的后缀！ // wwwroot + / + index.html wwwroot/image/th.jpg wwwroot/css/XXX.css
         auto pos = _path.rfind(suffixsep);
         if(pos == std::string::npos)
@@ -143,16 +69,6 @@ private:
 
         std::cout << "=======: PATH: " << _path << std::endl;
     }
-
-    void SplitString(std::string &line, std::string *key, std::string *value, std::string sep = headersep)
-    {
-        auto pos = line.find(sep);
-        if (pos == std::string::npos)
-            return;
-        *key = line.substr(0, pos);
-        *value = line.substr(pos + sep.size());
-    }
-
     void PrintDebug()
     {
         std::cout << "reqline:" << _method << "#" << _uri << "#" << _http_version << std::endl;
@@ -166,65 +82,148 @@ private:
         std::cout << "suffix: " << _suffix << std::endl;
     }
 
+    void SplitString(std::string &line, std::string *key, std::string *value, std::string sep = headersep)
+    {
+        auto pos = line.find(sep);
+        if (pos == std::string::npos)
+            return;
+        *key = line.substr(0, pos);
+        *value = line.substr(pos + sep.size());
+    }
+
+public:
+    HttpRequest() {}
+    void Deserialize(std::string &streamstr)
+    {
+        // 1. 读取第一行
+        std::string status_line;
+        int n = ReadOneLine(streamstr, &status_line);
+        (void)n;
+
+        // GET /a/b/c/d/e.html HTTP/1.1
+        // GET / HTTP/1.1
+        // 2. 解析请求行
+        ParseReqLine(status_line);
+        // PrintDebug();
+
+        // 3. 提取请求报头
+        n = 0;
+        do
+        {
+            std::string line;
+            n = ReadOneLine(streamstr, &line);
+            if (n > 0)
+            {
+                std::string key, value;
+                SplitString(line, &key, &value, headersep);
+                if (!key.empty() && !value.empty())
+                {
+                    _headerkv[key] = value;
+                }
+            }
+            else if (n == 0)
+            {
+                _blankline = "\r\n";
+                break;
+            }
+            else
+            {
+                LOG(LogLevel::DEBUG) << "bug??";
+                break;
+            }
+        } while (n > 0);
+
+        if (_headerkv.find("Content-Length") != _headerkv.end())
+        {
+            int len = std::stoi(_headerkv["Content-Length"]);
+            _body = streamstr.substr(0, len);
+            if(_method == "POST" || _method == "post")
+            {
+                _args = _body;
+            }
+            // _body = streamstr;
+        }
+
+        // PrintDebug();
+    }
+    std::string operator[](const std::string &key) const
+    {
+        if (key == "method")
+            return _method;
+        else if (key == "uri")
+            return _uri;
+        else if (key == "httpversion")
+            return _http_version;
+        else if (key == "body")
+            return _body;
+        else if (key == "path")
+            return _path;
+        else if (key == "suffix")
+            return _suffix;
+        else if(key == "args")
+            return _args;
+        else
+        {
+            auto iter = _headerkv.find(key);
+            if (iter != _headerkv.end())
+                return iter->second;
+        }
+        return std::string();
+    }
+    ~HttpRequest() {}
 
 private:
     std::string _method;
-    std::string _uri;
+    std::string _uri; // /a/b/c.html   /(特殊情况)
     std::string _http_version;
-    std::unordered_map<std::string,std::string> _headerkv;
+    std::unordered_map<std::string, std::string> _headerkv;
     std::string _blankline;
     std::string _body;
 
+private:
     std::string _path;
-    std::string _suffix;
-    std::string _args;
+    std::string _suffix; // 资源后缀
+    std::string _args; // 如果提参了，我们就保存起来
 };
 
 class HttpResponse
 {
 public:
-    HttpResponse()
-    :_http_version(gdefault_version)
-    ,_blankline(linesep)
-    {}
-
-    void Serialize(std::string* outstr)
+    HttpResponse() : _http_version(gdefault_version), _blankline(linesep)
+    {
+    }
+    ~HttpResponse() {}
+    void Serialize(std::string *outstr)
     {
         std::string status_line = _http_version + gspace + std::to_string(_status_code) + gspace + _status_code_desc + linesep;
         std::string headers;
-        for(auto& item : _resp_headerkv)
+        for (auto &item : _resp_headerkv)
         {
             std::string header = item.first + headersep + item.second + linesep;
             headers += header;
         }
         *outstr = status_line + headers + _blankline + _body;
     }
-
-    void SetBody(const std::string& content)
+    void SetBody(const std::string &content)
     {
         _body = content;
     }
-
     void SetCode(int code)
     {
         _status_code = code;
-        _status_code_desc = CodeToDesc(code);
+        _status_code_desc = Code2Desc(code);
     }
-
-    void SetHeader(const std::string& key,const std::string& value)
+    void SetHeader(const std::string &key, const std::string &value)
     {
         _resp_headerkv[key] = value;
     }
-
     void SetHeader(const std::string &key, int value)
     {
         _resp_headerkv[key] = std::to_string(value);
     }
 
-    ~HttpResponse(){}
-
 private:
-    std::string CodeToDesc(int code)
+    std::string Code2Desc(int code)
     {
         switch (code)
         {
@@ -370,11 +369,14 @@ private:
         }
     }
 
+private:
     // 结构化字段
     std::string _http_version;
     int _status_code;
     std::string _status_code_desc;
-    std::unordered_map<std::string,std::string> _resp_headerkv;
+    std::unordered_map<std::string, std::string> _resp_headerkv;
     std::string _blankline;
     std::string _body;
 };
+
+#endif

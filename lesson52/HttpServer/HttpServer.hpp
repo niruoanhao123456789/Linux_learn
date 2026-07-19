@@ -6,26 +6,28 @@
 #include <fstream>
 #include <functional>
 #include <unordered_map>
-#include "HttpProtoco.hpp"
+#include "HttpProtocol.hpp"
 #include "TcpServer.hpp"
 #include "Logger.hpp"
 
 using namespace LogModule;
-using route_t = std::function<void(const HttpRequest& req,HttpResponse& resp)>;
+
+using route_t = std::function<void(const HttpRequest &req, HttpResponse &resp)>;
 
 class HttpServer
 {
 public:
     HttpServer(uint16_t port)
-    :_port(port)
-    ,_tsvr(std::make_unique<TcpServer>(port))
-    {}
-
+        : _port(port),
+          _tsvr(std::make_unique<TcpServer>(port))
+    {
+    }
     // 1. 分析收到的字节流是否有完整的HTTP报文
     // 2. http request -> http response
-    std::string HandlerHttpRequest(std::string& streamstr)
+    std::string HandlerHttpRequest(std::string &streamstr)
     {
-        std::cout << "HandlerHttpRequest: \r\n" << streamstr << std::endl;
+        std::cout << "HandlerHttpRequest: \r\n"
+                  << streamstr << std::endl;
 
         // 1. 报文完整性 - 略
         // 2. 反序列化
@@ -33,16 +35,16 @@ public:
         httpreq.Deserialize(streamstr);
         HttpResponse httpresp;
 
-        if(NeedHandlder(httpreq["path"]))
+        if (NeedHanlder(httpreq["path"]))
         {
             // 处理动态资源
-            _route[httpreq["path"]](httpreq,httpresp);
+            _route[httpreq["path"]](httpreq, httpresp);
         }
         else
         {
             // 3. 处理静态资源请求，构建应答httpreq->httpresp
             std::string filecontent = GetFileContentHelper(httpreq["path"]);
-            
+
             std::string suffix = httpreq["suffix"];
             if (filecontent.empty())
             {
@@ -53,7 +55,7 @@ public:
             {
                 httpresp.SetCode(200);
                 httpresp.SetHeader("Content-Length", filecontent.size());
-                httpresp.SetHeader("Content-Type", SuffixToType(suffix));
+                httpresp.SetHeader("Content-Type", Suffix2Type(suffix));
                 httpresp.SetBody(filecontent);
             }
         }
@@ -65,50 +67,44 @@ public:
         // 5. 返回
         return httprespstr;
     }
-
     void Run()
     {
-        _tsvr->Run([this](std::string& streamstr) -> std::string
-                    {return this->HandlerHttpRequest(streamstr);});
+        _tsvr->Run([this](std::string &streamstr) -> std::string
+                   { return this->HandlerHttpRequest(streamstr); });
     }
-
-    void Register(std::string uri,route_t handler)
+    void Register(std::string uri, route_t handler)
     {
         std::string key = webroot + uri; // wwwroot/login
         _route[key] = handler;
     }
-
     ~HttpServer() {}
 
 private:
-    bool NeedHandlder(const std::string& key)
+    bool NeedHanlder(const std::string &key)
     {
         return _route.find(key) != _route.end();
     }
-
-    std::string GetFileContentHelper(const std::string& filename)
+    std::string GetFileContentHelper(const std::string &filename)
     {
         std::ifstream in(filename);
-        if(!in.is_open())
+        if (!in.is_open())
         {
             return std::string();
         }
-
-        in.seekg(0,in.end);
+        in.seekg(0, in.end);
         int filesize = in.tellg();
-        in.seekg(0,in.beg);
+        in.seekg(0, in.beg);
 
         std::string content;
         content.resize(filesize);
-        in.read((char*)content.c_str(),filesize);
+        in.read((char *)content.c_str(), filesize);
         in.close();
 
         return content;
     }
-
     // suffix: .html
     // return: text/html
-    std::string SuffixToType(const std::string &suffix)
+    std::string Suffix2Type(const std::string &suffix)
     {
         // 使用静态映射表提高效率，避免每次调用都重新创建
         static const std::unordered_map<std::string, std::string> mime_map = {
@@ -200,5 +196,4 @@ private:
     uint16_t _port;
     std::unique_ptr<TcpServer> _tsvr;
     std::unordered_map<std::string, route_t> _route; // 注册服务的容器
-
 };
