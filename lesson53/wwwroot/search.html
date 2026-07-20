@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>搜索 - 简单搜索，发现世界</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background-color: #ffffff;
+            color: #222;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .search-wrapper {
+            width: 100%;
+            max-width: 640px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .logo-area {
+            margin-bottom: 28px;
+            font-size: 4rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .logo-baidu {
+            background: linear-gradient(135deg, #0e5eff, #2a6eff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            font-weight: 600;
+            font-size: 4.2rem;
+        }
+
+        .logo-simple {
+            font-size: 3rem;
+            font-weight: 400;
+            color: #333;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            background: #fff;
+            border: 1px solid #dfe1e5;
+            border-radius: 44px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+            transition: box-shadow 0.2s, border-color 0.2s;
+            padding: 5px 10px 5px 20px;
+        }
+
+        .search-box:hover,
+        .search-box:focus-within {
+            border-color: #bdc1c6;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            padding: 14px 0;
+            background: transparent;
+            font-size: 16px;
+            color: #202124;
+        }
+
+        .search-input::placeholder {
+            color: #9aa0a6;
+            font-weight: 400;
+        }
+
+        .search-icons {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-right: 8px;
+        }
+
+        .icon-symbol {
+            color: #9aa0a6;
+            font-size: 20px;
+            cursor: default;
+            transition: color 0.2s;
+        }
+
+        .icon-symbol:hover {
+            color: #5f6368;
+        }
+
+        .search-btn {
+            background: transparent;
+            border: none;
+            background-color: #f8f9fa;
+            border-radius: 28px;
+            padding: 10px 22px;
+            margin-left: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #3c4043;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.1s;
+            border: 1px solid #f8f9fa;
+        }
+
+        .search-btn:hover {
+            background-color: #f1f3f4;
+            border-color: #dadce0;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-btn:active {
+            background-color: #e8eaed;
+        }
+
+        .button-group {
+            margin-top: 32px;
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+        }
+
+        .action-btn {
+            background-color: #f8f9fa;
+            border: 1px solid #f8f9fa;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #3c4043;
+            cursor: pointer;
+            font-weight: 400;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background-color: #f1f3f4;
+            border-color: #dadce0;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 24px 16px;
+            font-size: 12px;
+            color: #9aa0a6;
+            border-top: 1px solid #eef2f6;
+            margin-top: 20px;
+            background: #fff;
+        }
+
+        .footer a {
+            color: #5f6368;
+            text-decoration: none;
+            margin: 0 6px;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+            color: #1a73e8;
+        }
+
+        .quick-tips {
+            max-width: 640px;
+            margin: 30px auto 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            font-size: 13px;
+        }
+
+        .tip-item {
+            background: #f2f4f7;
+            padding: 6px 14px;
+            border-radius: 26px;
+            color: #1f2a44;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-weight: 400;
+        }
+
+        .tip-item:hover {
+            background: #e6ecf4;
+        }
+
+        .demo-note {
+            font-size: 12px;
+            color: #8e96a3;
+            margin-top: 24px;
+        }
+
+        @media (max-width: 560px) {
+            .logo-area {
+                font-size: 2.8rem;
+            }
+            .logo-baidu {
+                font-size: 3rem;
+            }
+            .search-box {
+                padding-left: 14px;
+            }
+            .search-btn {
+                padding: 8px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="main-container">
+    <div class="search-wrapper">
+        <div class="logo-area">
+            <span class="logo-baidu">Search</span>
+            <span class="logo-simple">· 探索</span>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" class="search-input" placeholder="搜索一下，发现精彩..." autocomplete="off" value="">
+            <div class="search-icons">
+                <span class="icon-symbol">🎤</span>
+                <span class="icon-symbol">📷</span>
+            </div>
+            <button id="searchBtn" class="search-btn">搜索</button>
+        </div>
+
+        <div class="button-group">
+            <button id="btnSearch" class="action-btn">百度一下</button>
+            <button id="btnLucky" class="action-btn">手气不错 🌟</button>
+        </div>
+
+        <div class="quick-tips">
+            <span class="tip-item" data-word="人工智能 前沿">🤖 人工智能前沿</span>
+            <span class="tip-item" data-word="春日赏花攻略">🌸 春日赏花攻略</span>
+            <span class="tip-item" data-word="科技新品发布会">📱 科技新品</span>
+            <span class="tip-item" data-word="简洁设计灵感">🎨 简洁设计</span>
+            <span class="tip-item" data-word="本地天气 实时">☁️ 本地天气</span>
+        </div>
+        <div class="demo-note">
+            💡 仿百度风格 — 输入关键词，体验模拟搜索
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    <span>© 2025 搜索 · 极简探索</span>
+    <a href="#">关于</a>
+    <a href="#">隐私</a>
+    <a href="#">条款</a>
+    <a href="#">设置</a>
+</div>
+
+<script>
+    (function() {
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const btnSearch = document.getElementById('btnSearch');
+        const btnLucky = document.getElementById('btnLucky');
+        const tipItems = document.querySelectorAll('.tip-item');
+
+        function performBaiduSearch(keyword) {
+            if (!keyword || keyword.trim() === '') {
+                alert('请输入搜索关键词～ 试试热门推荐词');
+                return false;
+            }
+            const encoded = encodeURIComponent(keyword.trim());
+            const baiduSearchUrl = `https://www.baidu.com/s?wd=${encoded}`;
+            window.open(baiduSearchUrl, '_blank');
+            return true;
+        }
+
+        function handleSearch() {
+            const keyword = searchInput.value;
+            if (keyword.trim() === '') {
+                alert('输入点什么，开启探索之旅 ✨');
+                searchInput.focus();
+                return;
+            }
+            performBaiduSearch(keyword);
+        }
+
+        function handleLucky() {
+            const keyword = searchInput.value.trim();
+            if (keyword !== '') {
+                performBaiduSearch(keyword);
+            } else {
+                const luckySites = [
+                    { name: '🌌 每日地球天文图', url: 'https://apod.nasa.gov/apod/astropix.html' },
+                    { name: '📚 古登堡计划 (免费电子书)', url: 'https://www.gutenberg.org/' },
+                    { name: '🎨 设计灵感 · 站酷', url: 'https://www.zcool.com.cn/' },
+                    { name: '🧠 维基百科随机条目', url: 'https://zh.wikipedia.org/wiki/Special:随机页面' },
+                    { name: '🎵 沉浸式音乐场景', url: 'https://musicforprogramming.net/' },
+                    { name: '🌳 林间小憩 (白噪音)', url: 'https://pinetools.com/nature-sounds' },
+                    { name: '📰 优质科技文章', url: 'https://www.ruanyifeng.com/blog/' }
+                ];
+                const randomIndex = Math.floor(Math.random() * luckySites.length);
+                const site = luckySites[randomIndex];
+                window.open(site.url, '_blank');
+                alert(`✨ 手气不错为你发现: ${site.name}`);
+            }
+        }
+
+        function onTipClick(event) {
+            let keyword = '';
+            const targetEl = event.currentTarget;
+            if (targetEl.hasAttribute('data-word')) {
+                keyword = targetEl.getAttribute('data-word');
+            } else {
+                let rawText = targetEl.innerText.trim();
+                keyword = rawText.replace(/[🤖🌸📱🎨☁️]/g, '').trim();
+                if (keyword === '') keyword = rawText;
+            }
+            if (keyword) {
+                searchInput.value = keyword;
+                performBaiduSearch(keyword);
+            } else {
+                alert('获取推荐词失败，请手动输入~');
+            }
+        }
+
+        tipItems.forEach(item => {
+            item.addEventListener('click', onTipClick);
+        });
+
+        searchBtn.addEventListener('click', handleSearch);
+        btnSearch.addEventListener('click', handleSearch);
+        btnLucky.addEventListener('click', handleLucky);
+
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleSearch();
+            }
+        });
+
+        searchInput.addEventListener('paste', function(e) {
+            setTimeout(() => {
+                let val = searchInput.value;
+                if (val) {
+                    searchInput.value = val.replace(/\s+/g, ' ').trim();
+                }
+            }, 10);
+        });
+
+        console.log('仿百度搜索页已准备就绪 | 输入关键词即可跳转百度搜索');
+    })();
+</script>
+</body>
+</html>

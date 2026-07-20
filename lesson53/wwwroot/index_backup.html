@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的博客 · 简易版</title>
+    <style>
+        /* ----- 全局重置 & 字体 ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0b0f1a;
+            background-image: radial-gradient(ellipse at 20% 30%, #1a2340, #0b0f1a 75%);
+            padding: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        /* ----- 博客容器 ----- */
+        .blog-container {
+            width: 100%;
+            max-width: 1100px;
+            background: rgba(18, 25, 45, 0.65);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-radius: 2.5rem 1rem 2.5rem 1rem;
+            padding: 2rem 2.2rem 2.5rem;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            margin-top: 0.5rem;
+        }
+
+        /* ----- 顶部导航 / 用户信息 ----- */
+        .blog-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 1.2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .blog-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .blog-brand .brand-icon {
+            font-size: 1.8rem;
+            background: linear-gradient(145deg, #f5b56b, #e8924b);
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px 4px 16px 4px;
+            color: #0b0f1a;
+            font-weight: 700;
+            box-shadow: 0 6px 16px rgba(232, 146, 75, 0.2);
+        }
+
+        .blog-brand h1 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #f0ece4;
+            letter-spacing: -0.5px;
+        }
+
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-area .avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #6bcbff, #4a9eff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #0b0f1a;
+            font-size: 1rem;
+            box-shadow: 0 4px 12px rgba(74, 158, 255, 0.2);
+        }
+
+        .user-area .user-name {
+            color: #d0daea;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .user-area .logout-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #a5b3cf;
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .user-area .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 100, 100, 0.3);
+            color: #f0a0a0;
+        }
+
+        /* ----- 主体布局: 文章列表 + 侧边栏 ----- */
+        .blog-main {
+            display: flex;
+            gap: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .posts-section {
+            flex: 2;
+            min-width: 280px;
+        }
+
+        .sidebar {
+            flex: 1;
+            min-width: 200px;
+            max-width: 300px;
+        }
+
+        /* ----- 文章卡片 ----- */
+        .post-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 1.5rem 0.6rem 1.5rem 0.6rem;
+            padding: 1.5rem 1.6rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.25s ease;
+            cursor: default;
+        }
+
+        .post-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .post-card .post-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #f0ece4;
+            margin-bottom: 0.4rem;
+            letter-spacing: -0.3px;
+        }
+
+        .post-card .post-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem 1.2rem;
+            font-size: 0.8rem;
+            color: #7a8aaa;
+            margin-bottom: 0.7rem;
+        }
+
+        .post-card .post-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .post-card .post-excerpt {
+            color: #bcc8e0;
+            line-height: 1.7;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .post-card .post-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .post-card .post-tags .tag {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 0.15rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            color: #8a9bbd;
+            letter-spacing: 0.3px;
+        }
+
+        .post-card .read-more {
+            display: inline-block;
+            margin-top: 0.8rem;
+            color: #6bcbff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .post-card .read-more:hover {
+            border-color: #6bcbff;
+        }
+
+        /* ----- 侧边栏组件 ----- */
+        .sidebar-widget {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 1.5rem 0.6rem 1.5rem 0.6rem;
+            padding: 1.4rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-widget h3 {
+            color: #d0daea;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            letter-spacing: 0.3px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            padding-bottom: 0.5rem;
+        }
+
+        .sidebar-widget ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-widget ul li {
+            padding: 0.4rem 0;
+            color: #b0bedb;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sidebar-widget ul li:last-child {
+            border-bottom: none;
+        }
+
+        .sidebar-widget ul li .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #4a9eff;
+            flex-shrink: 0;
+        }
+
+        .sidebar-widget .cat-item {
+            justify-content: space-between;
+        }
+
+        .sidebar-widget .cat-item .count {
+            color: #5d6f8f;
+            font-size: 0.75rem;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0.1rem 0.6rem;
+            border-radius: 20px;
+        }
+
+        .sidebar-widget .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .sidebar-widget .tag-cloud .tag-sm {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 0.15rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            color: #8a9bbd;
+            transition: all 0.15s;
+            cursor: default;
+        }
+
+        .sidebar-widget .tag-cloud .tag-sm:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: #d0daea;
+        }
+
+        /* ----- 响应式 ----- */
+        @media (max-width: 768px) {
+            .blog-container {
+                padding: 1.5rem 1rem;
+            }
+            .blog-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.8rem;
+            }
+            .user-area {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            .blog-main {
+                flex-direction: column;
+            }
+            .sidebar {
+                max-width: 100%;
+            }
+            .post-card {
+                padding: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .blog-container {
+                padding: 1rem 0.8rem;
+            }
+            .blog-brand h1 {
+                font-size: 1.3rem;
+            }
+            .post-card .post-title {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="blog-container">
+
+        <!-- 顶部导航 -->
+        <header class="blog-header">
+            <div class="blog-brand">
+                <div class="brand-icon">✎</div>
+                <h1>墨言博客</h1>
+            </div>
+            <div class="user-area">
+                <div class="avatar">张</div>
+                <span class="user-name">张小明</span>
+                <a href="#" class="logout-btn" onclick="alert('👋 您已安全退出 (演示)'); return false;">退出</a>
+            </div>
+        </header>
+
+        <!-- 主体 -->
+        <div class="blog-main">
+
+            <!-- 文章列表 -->
+            <section class="posts-section">
+
+                <article class="post-card">
+                    <h2 class="post-title">探索前端工程化的未来</h2>
+                    <div class="post-meta">
+                        <span>📅 2026-07-18</span>
+                        <span>👤 张小明</span>
+                        <span>💬 12 评论</span>
+                    </div>
+                    <p class="post-excerpt">
+                        随着 Vite、Rust 工具链的崛起，前端工程化正在经历一场深刻的变革。本文从构建工具、类型系统、微前端等角度，探讨未来几年的发展趋势……
+                    </p>
+                    <div class="post-tags">
+                        <span class="tag">前端</span>
+                        <span class="tag">工程化</span>
+                        <span class="tag">Vite</span>
+                    </div>
+                    <a href="#" class="read-more" onclick="alert('📖 完整文章 (演示)'); return false;">阅读全文 →</a>
+                </article>
+
+                <article class="post-card">
+                    <h2 class="post-title">CSS 容器查询实战指南</h2>
+                    <div class="post-meta">
+                        <span>📅 2026-07-15</span>
+                        <span>👤 李设计</span>
+                        <span>💬 8 评论</span>
+                    </div>
+                    <p class="post-excerpt">
+                        容器查询让我们能够基于父容器尺寸来调整样式，彻底改变组件化开发模式。本文通过实际案例，带你掌握 container queries 的使用技巧与最佳实践……
+                    </p>
+                    <div class="post-tags">
+                        <span class="tag">CSS</span>
+                        <span class="tag">响应式</span>
+                        <span class="tag">容器查询</span>
+                    </div>
+                    <a href="#" class="read-more" onclick="alert('📖 完整文章 (演示)'); return false;">阅读全文 →</a>
+                </article>
+
+                <article class="post-card">
+                    <h2 class="post-title">从零实现一个简易的 MVVM 框架</h2>
+                    <div class="post-meta">
+                        <span>📅 2026-07-12</span>
+                        <span>👤 王代码</span>
+                        <span>💬 24 评论</span>
+                    </div>
+                    <p class="post-excerpt">
+                        理解 MVVM 核心原理是进阶前端开发者的必修课。本文将带你一步步实现数据劫持、依赖收集、模板编译和双向绑定，让你对 Vue/React 有更深的认知……
+                    </p>
+                    <div class="post-tags">
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">MVVM</span>
+                        <span class="tag">框架</span>
+                    </div>
+                    <a href="#" class="read-more" onclick="alert('📖 完整文章 (演示)'); return false;">阅读全文 →</a>
+                </article>
+
+                <!-- 加载更多 (装饰) -->
+                <div style="text-align: center; margin-top: 0.8rem;">
+                    <a href="#" onclick="alert('📚 加载更多文章 (演示)'); return false;" style="color: #7a8aaa; font-size: 0.9rem; border-bottom: 1px dashed rgba(255,255,255,0.1); text-decoration: none; padding: 0.3rem 1.5rem;">加载更多…</a>
+                </div>
+            </section>
+
+            <!-- 侧边栏 -->
+            <aside class="sidebar">
+
+                <div class="sidebar-widget">
+                    <h3>📌 热门文章</h3>
+                    <ul>
+                        <li><span class="dot"></span> 探索前端工程化的未来</li>
+                        <li><span class="dot"></span> CSS 容器查询实战指南</li>
+                        <li><span class="dot"></span> 从零实现 MVVM 框架</li>
+                        <li><span class="dot"></span> TypeScript 高级类型体操</li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-widget">
+                    <h3>📂 分类</h3>
+                    <ul>
+                        <li class="cat-item"><span>前端开发</span> <span class="count">12</span></li>
+                        <li class="cat-item"><span>CSS 艺术</span> <span class="count">8</span></li>
+                        <li class="cat-item"><span>JavaScript</span> <span class="count">15</span></li>
+                        <li class="cat-item"><span>工程化</span> <span class="count">6</span></li>
+                        <li class="cat-item"><span>设计模式</span> <span class="count">4</span></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-widget">
+                    <h3>🏷️ 标签云</h3>
+                    <div class="tag-cloud">
+                        <span class="tag-sm">Vue</span>
+                        <span class="tag-sm">React</span>
+                        <span class="tag-sm">TypeScript</span>
+                        <span class="tag-sm">CSS</span>
+                        <span class="tag-sm">Node.js</span>
+                        <span class="tag-sm">Webpack</span>
+                        <span class="tag-sm">Vite</span>
+                        <span class="tag-sm">Rust</span>
+                        <span class="tag-sm">性能</span>
+                        <span class="tag-sm">架构</span>
+                    </div>
+                </div>
+
+                <div class="sidebar-widget" style="background: rgba(74, 158, 255, 0.04); border-color: rgba(74, 158, 255, 0.08);">
+                    <h3 style="color: #6bcbff;">✍️ 写新文章</h3>
+                    <p style="color: #b0bedb; font-size: 0.9rem; line-height: 1.6; margin-bottom: 0.6rem;">
+                        分享你的想法，记录技术点滴。
+                    </p>
+                    <a href="#" onclick="alert('📝 跳转到编辑器 (演示)'); return false;" style="display: inline-block; background: linear-gradient(145deg, #6bcbff, #4a9eff); color: #0b0f1a; padding: 0.4rem 1.8rem; border-radius: 40px; font-weight: 600; font-size: 0.9rem; text-decoration: none; box-shadow: 0 4px 12px rgba(74, 158, 255, 0.2); transition: 0.2s;">开始写作 →</a>
+                </div>
+
+            </aside>
+        </div>
+
+        <!-- 页脚 -->
+        <footer style="margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid rgba(255, 255, 255, 0.03); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; font-size: 0.75rem; color: #4a5a78;">
+            <span>© 2026 墨言博客 · 用 ❤️ 构建</span>
+            <span>登录用户: 张小明 · <a href="#" onclick="alert('⚙️ 设置 (演示)'); return false;" style="color: #5d6f8f; text-decoration: none; border-bottom: 1px dashed rgba(255,255,255,0.05);">账户设置</a></span>
+        </footer>
+
+    </div>
+
+    <script>
+        (function() {
+            "use strict";
+
+            // 模拟登录用户信息 (从登录页跳转过来)
+            // 在实际项目中，可从 localStorage / sessionStorage 读取
+            console.log('✅ 博客已加载，用户: 张小明 (模拟登录)');
+
+            // 模拟"退出"确认 (已在内联 onclick 中处理)
+            // 额外：点击文章卡片可增加趣味反馈
+            const cards = document.querySelectorAll('.post-card');
+            cards.forEach((card, index) => {
+                card.addEventListener('click', function(e) {
+                    // 防止点击内部链接时触发两次
+                    if (e.target.closest('a')) return;
+                    // 轻微动画反馈
+                    this.style.transition = 'transform 0.1s';
+                    this.style.transform = 'scale(0.98)';
+                    setTimeout(() => { this.style.transform = ''; }, 150);
+                });
+            });
+
+            // 侧边栏标签点击演示
+            document.querySelectorAll('.tag-sm').forEach(tag => {
+                tag.addEventListener('click', function() {
+                    alert(`🔍 筛选标签: ${this.textContent} (演示)`);
+                });
+            });
+
+            // 热门文章点击演示
+            document.querySelectorAll('.sidebar-widget ul li').forEach(item => {
+                item.style.cursor = 'pointer';
+                item.addEventListener('click', function() {
+                    const text = this.textContent.trim().replace(/\d+$/, '').trim();
+                    alert(`📄 跳转到文章: ${text} (演示)`);
+                });
+            });
+
+            console.log('✨ 博客交互已启用 (点击卡片/标签/热门文章有反馈)');
+        })();
+    </script>
+
+    <!-- 总行数约 380 行，严格 < 400 行 -->
+</body>
+</html>

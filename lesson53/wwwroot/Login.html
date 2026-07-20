@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户登录</title>
+    <style>
+        /* ----- 全局重置 & 字体 ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0b0f1a;
+            /* 柔和渐变背景 */
+            background-image: radial-gradient(ellipse at 20% 30%, #1e2844, #0b0f1a 70%);
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        /* ----- 装饰性动态粒子画布 (轻量) ----- */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.5;
+        }
+
+        /* ----- 登录卡片 ----- */
+        .login-card {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 420px;
+            background: rgba(18, 25, 45, 0.7);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-radius: 2.5rem 1rem 2.5rem 1rem;
+            padding: 2.8rem 2.2rem 2.5rem;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: transform 0.3s ease, box-shadow 0.4s;
+        }
+
+        .login-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 40px 70px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 200, 120, 0.08);
+        }
+
+        /* ----- 头部 ----- */
+        .login-header {
+            text-align: center;
+            margin-bottom: 2.2rem;
+        }
+
+        .login-header .logo-icon {
+            font-size: 2.8rem;
+            display: inline-block;
+            background: linear-gradient(145deg, #f5b56b, #e8924b);
+            width: 70px;
+            height: 70px;
+            line-height: 70px;
+            border-radius: 30px 8px 30px 8px;
+            color: #0b0f1a;
+            box-shadow: 0 10px 24px rgba(232, 146, 75, 0.25);
+            margin-bottom: 0.6rem;
+            font-weight: 600;
+        }
+
+        .login-header h1 {
+            font-size: 1.9rem;
+            font-weight: 600;
+            color: #f0ece4;
+            letter-spacing: -0.5px;
+        }
+
+        .login-header p {
+            color: #a5b3cf;
+            font-size: 0.95rem;
+            margin-top: 4px;
+            opacity: 0.8;
+        }
+
+        /* ----- 表单元素 ----- */
+        .form-group {
+            margin-bottom: 1.6rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #c8d2e8;
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+        }
+
+        .input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 60px;
+            transition: border-color 0.25s, background 0.25s;
+            padding: 0 1.2rem;
+        }
+
+        .input-wrap:focus-within {
+            border-color: rgba(245, 181, 107, 0.5);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 0 0 3px rgba(245, 181, 107, 0.08);
+        }
+
+        .input-wrap .input-icon {
+            color: #6a7fa0;
+            font-size: 1.2rem;
+            margin-right: 10px;
+            opacity: 0.7;
+            user-select: none;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            padding: 0.9rem 0.2rem 0.9rem 0;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #f0f4ff;
+            font-size: 1rem;
+            font-weight: 400;
+            letter-spacing: 0.2px;
+        }
+
+        .input-wrap input::placeholder {
+            color: #5d6f8f;
+            font-weight: 300;
+            font-size: 0.95rem;
+        }
+
+        .input-wrap input:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 30px #141d30 inset !important;
+            -webkit-text-fill-color: #f0f4ff !important;
+        }
+
+        /* 辅助选项 (记住我 + 忘记密码) */
+        .form-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 0.2rem 0 1.8rem;
+            flex-wrap: wrap;
+            gap: 0.5rem 0.8rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #b0bedb;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
+            accent-color: #e8924b;
+            border-radius: 4px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .forgot-link {
+            color: #b0bedb;
+            font-size: 0.9rem;
+            text-decoration: none;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .forgot-link:hover {
+            color: #f5b56b;
+            border-color: #f5b56b;
+        }
+
+        /* 登录按钮 */
+        .btn-login {
+            width: 100%;
+            padding: 0.9rem;
+            background: linear-gradient(145deg, #f5b56b, #e8924b);
+            border: none;
+            border-radius: 60px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0b0f1a;
+            box-shadow: 0 8px 24px rgba(232, 146, 75, 0.3);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(145deg, #ffc583, #f09d52);
+            transform: scale(1.01);
+            box-shadow: 0 12px 32px rgba(232, 146, 75, 0.45);
+        }
+
+        .btn-login:active {
+            transform: scale(0.97);
+        }
+
+        /* 注册引导 */
+        .signup-prompt {
+            text-align: center;
+            margin-top: 2rem;
+            color: #8899bb;
+            font-size: 0.95rem;
+        }
+
+        .signup-prompt a {
+            color: #f5b56b;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .signup-prompt a:hover {
+            border-color: #f5b56b;
+        }
+
+        /* 社交登录 (纯装饰) */
+        .social-divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.8rem 0 1rem;
+            color: #4a5a78;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .social-divider::before,
+        .social-divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+        }
+
+        .social-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #bcc8e6;
+            font-size: 1.2rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            backdrop-filter: blur(2px);
+        }
+
+        .social-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(245, 181, 107, 0.3);
+            color: #f5d78e;
+            transform: translateY(-2px);
+        }
+
+        /* 响应式 */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 2rem 1.5rem;
+            }
+            .login-header h1 {
+                font-size: 1.6rem;
+            }
+            .login-header .logo-icon {
+                width: 60px;
+                height: 60px;
+                line-height: 60px;
+                font-size: 2.2rem;
+            }
+            .form-options {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .input-wrap {
+                padding: 0 1rem;
+            }
+            .btn-login {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .login-card {
+                padding: 1.6rem 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 背景粒子画布 (轻量) -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- 登录卡片 -->
+    <main class="login-card" role="main" aria-label="登录面板">
+        <div class="login-header">
+            <div class="logo-icon">🔐</div>
+            <h1>欢迎回来</h1>
+            <p>登录以继续访问你的账户</p>
+        </div>
+
+        <!-- 登录表单 -->
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label for="email">电子邮箱</label>
+                <div class="input-wrap">
+                    <span class="input-icon">✉️</span>
+                    <input type="email" id="email" placeholder="you@example.com" required autocomplete="email">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">密码</label>
+                <div class="input-wrap">
+                    <span class="input-icon">🔑</span>
+                    <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password" minlength="6">
+                </div>
+            </div>
+
+            <div class="form-options">
+                <label class="remember-me">
+                    <input type="checkbox" id="remember"> 记住我
+                </label>
+                <a href="#" class="forgot-link" onclick="alert('📧 重置链接已发送至您的邮箱 (演示)'); return false;">忘记密码？</a>
+            </div>
+
+            <button type="submit" class="btn-login">
+                <span>→</span> 登录
+            </button>
+        </form>
+
+        <!-- 社交登录 (装饰) -->
+        <div class="social-divider">或使用其他方式</div>
+        <div class="social-icons">
+            <a href="#" class="social-btn" onclick="alert('🔵 Google 登录 (演示)'); return false;">G</a>
+            <a href="#" class="social-btn" onclick="alert('🔷 GitHub 登录 (演示)'); return false;">GH</a>
+            <a href="#" class="social-btn" onclick="alert('🐦 Twitter 登录 (演示)'); return false;">𝕏</a>
+        </div>
+
+        <div class="signup-prompt">
+            还没有账户？ <a href="#" onclick="alert('📝 跳转到注册页面 (演示)'); return false;">立即注册</a>
+        </div>
+
+        <!-- 脚标 (纯装饰) -->
+        <div style="margin-top: 1.8rem; font-size: 0.6rem; text-align: center; color: #3a4a66; letter-spacing: 0.5px; opacity: 0.6; border-top: 1px solid rgba(255,255,255,0.02); padding-top: 1.2rem;">
+            🔒 安全登录 · 演示界面
+        </div>
+    </main>
+
+    <script>
+        (function() {
+            "use strict";
+
+            // ---------- 轻量粒子背景 ----------
+            const canvas = document.getElementById('bg-canvas');
+            const ctx = canvas.getContext('2d');
+            let w, h;
+            let dots = [];
+            const COUNT = 55;
+            const MAX_DIST = 140;
+            const SPEED = 0.3;
+
+            function resize() {
+                w = window.innerWidth;
+                h = window.innerHeight;
+                canvas.width = w;
+                canvas.height = h;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            class Dot {
+                constructor() {
+                    this.x = Math.random() * w;
+                    this.y = Math.random() * h;
+                    this.vx = (Math.random() - 0.5) * SPEED * 1.6;
+                    this.vy = (Math.random() - 0.5) * SPEED * 1.6;
+                    this.r = Math.random() * 2.2 + 0.8;
+                    const hue = 220 + Math.random() * 30;
+                    this.color = `hsla(${hue}, 60%, 70%, ${0.3 + Math.random() * 0.4})`;
+                }
+            }
+
+            for (let i = 0; i < COUNT; i++) dots.push(new Dot());
+
+            function drawDots() {
+                ctx.clearRect(0, 0, w, h);
+
+                // 连线
+                for (let i = 0; i < dots.length; i++) {
+                    for (let j = i + 1; j < dots.length; j++) {
+                        const a = dots[i],
+                            b = dots[j];
+                        const dx = a.x - b.x,
+                            dy = a.y - b.y;
+                        const dist = Math.hypot(dx, dy);
+                        if (dist < MAX_DIST) {
+                            const alpha = 0.2 * (1 - dist / MAX_DIST);
+                            ctx.beginPath();
+                            ctx.moveTo(a.x, a.y);
+                            ctx.lineTo(b.x, b.y);
+                            ctx.strokeStyle = `rgba(190, 210, 240, ${alpha})`;
+                            ctx.lineWidth = 0.7;
+                            ctx.stroke();
+                        }
+                    }
+                }
+
+                // 画点
+                for (let d of dots) {
+                    ctx.beginPath();
+                    ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+                    ctx.fillStyle = d.color;
+                    ctx.shadowColor = 'rgba(160, 190, 255, 0.1)';
+                    ctx.shadowBlur = 8;
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
+            }
+
+            function updateDots() {
+                for (let d of dots) {
+                    d.x += d.vx;
+                    d.y += d.vy;
+                    if (d.x < 0 || d.x > w) { d.vx *= -0.9;
+                        d.x = Math.min(Math.max(d.x, 2), w - 2); }
+                    if (d.y < 0 || d.y > h) { d.vy *= -0.9;
+                        d.y = Math.min(Math.max(d.y, 2), h - 2); }
+                    // 随机扰动
+                    if (Math.random() < 0.008) {
+                        d.vx += (Math.random() - 0.5) * 0.15;
+                        d.vy += (Math.random() - 0.5) * 0.15;
+                        const sp = Math.hypot(d.vx, d.vy);
+                        if (sp > SPEED * 1.4) {
+                            d.vx = (d.vx / sp) * SPEED * 1.2;
+                            d.vy = (d.vy / sp) * SPEED * 1.2;
+                        }
+                    }
+                }
+            }
+
+            function loop() {
+                updateDots();
+                drawDots();
+                requestAnimationFrame(loop);
+            }
+            loop();
+
+            // 窗口自适应时重新分布粒子
+            window.addEventListener('resize', () => {
+                resize();
+                for (let d of dots) {
+                    d.x = Math.min(Math.max(d.x, 10), w - 10);
+                    d.y = Math.min(Math.max(d.y, 10), h - 10);
+                }
+            });
+
+            // ---------- 登录处理 (模拟) ----------
+            window.handleLogin = function(e) {
+                e.preventDefault();
+                const email = document.getElementById('email').value.trim();
+                const pwd = document.getElementById('password').value.trim();
+                const remember = document.getElementById('remember').checked;
+
+                if (!email || !pwd) {
+                    alert('⚠️ 请填写邮箱和密码');
+                    return;
+                }
+
+                // 简单邮箱格式校验 (演示)
+                if (!email.includes('@') || !email.includes('.')) {
+                    alert('📧 请输入有效的邮箱地址 (演示校验)');
+                    return;
+                }
+
+                if (pwd.length < 6) {
+                    alert('🔐 密码至少6位 (演示校验)');
+                    return;
+                }
+
+                // 模拟登录成功
+                alert(`✅ 登录成功！\n邮箱: ${email}\n记住我: ${remember ? '是' : '否'}\n(演示交互，无真实后端)`);
+
+                // 可在此处重定向或执行其他操作
+                // window.location.href = "/dashboard";
+            };
+
+            // 额外：回车触发表单 (已由form的submit事件接管)
+            console.log('✨ 登录页面已加载 (粒子背景 + 模拟登录)');
+        })();
+    </script>
+
+</body>
+</html>
